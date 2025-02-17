@@ -3,77 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statewise Population Bar Chart</title>
+    <title>Dropdown Menu</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
-      .container {
-          margin: 20px;
-          font-family: Arial, sans-serif;
-      }
-      .controls {
-          margin-bottom: 20px;
-          padding: 15px;
-          background-color: #f5f5f5;
-          border-radius: 5px;
-      }
-      .state-checklist {
-          max-height: 300px;
-          overflow-y: auto;
-          border: 1px solid #ddd;
-          padding: 10px;
-          background-color: white;
-          border-radius: 4px;
-      }
-      .state-option {
-          display: block;
-          padding: 5px;
-      }
-      .state-option:hover {
-          background-color: #f0f0f0;
-      }
-      .bar:hover {
-          fill: orange !important;
-          transition: fill 0.3s ease;
-      }
-      button {
-          margin-top: 10px;
-          padding: 8px 15px;
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-      }
-      button:hover {
-          background-color: #45a049;
-      }
-  </style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        #scatter-options {
+            margin-top: 10px;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Statewise Analysis</h1>
-        
-        <div class="controls">
-            <!-- Add master dropdown -->
-            <label>Select Analysis Type:</label>
-            <select id="analysisType" onchange="handleAnalysisChange()" style="margin-bottom: 20px; padding: 5px;">
-                <option value="population">Population by State</option>
-                <option value="income">Income Distribution</option>
-            </select>
+    <div id="controls">
+        <label for="dataType">Choose data type:</label>
+        <select id="dataType" onchange="updateChart()">
+            <option value="states">Population across States</option>
+            <option value="counties">Population across Counties</option>
+            <option value="populationDistribution">Population Distribution</option>
+            <option value="ethnicity">Ethnicity</option>
+            <option value="gender">Gender</option>
+            <option value="income_state">Income distribution State</option>
+            <option value="income_county">Income distribution County</option>
+            <option value="meancommute">Mean Commute Time</option>
+            <option value="scatter">Scatter Plot</option>
+        </select>
 
-            <!-- Existing state selection controls -->
-            <div id="stateControls">
-                <label>Select States:</label>
-                <div class="state-checklist" id="stateChecklist">
-                    <!-- States will be dynamically populated here -->
-                </div>
-                <button onclick="updateChart()">Update Chart</button>
-            </div>
+        <div id="scatter-options" style="display: none;">
+            <label><input type="radio" name="xVariable" value="Income" checked> Income</label>
+            <label><input type="radio" name="xVariable" value="Poverty"> Poverty</label>
+            <label><input type="radio" name="xVariable" value="TotalPop"> Total Population</label>
+            <br>
+            <label><input type="radio" name="yVariable" value="Income"> Income</label>
+            <label><input type="radio" name="yVariable" value="Poverty" checked> Poverty</label>
+            <label><input type="radio" name="yVariable" value="TotalPop"> Total Population</label>
         </div>
-        
-        <svg id="populationChart" width="800" height="500"></svg>
     </div>
 
+    <div class="chart-container">
+        <svg id="chart" width="800" height="500"></svg>
+    </div>
+
+    <script src="charts.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
