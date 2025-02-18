@@ -8,47 +8,203 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 20px;
         }
         #controls {
             margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
         }
-        #scatter-options {
-            margin-top: 10px;
+        #scatter-options, #chart-options {
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
         .chart-container {
             display: flex;
             justify-content: center;
+            margin: 20px;
+            padding: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        select {
+            padding: 6px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        #toggleOrientation {
+            display: none;
+            background-color: #2196F3;
+        }
+        .axis-label {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .checkbox-dropdown {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: white;
+        }
+        .checkbox-item {
+            margin: 5px 0;
+        }
+        .checkbox-item input {
+            margin-right: 8px;
+        }
+        #updateChartButton {
+            margin-top: 10px;
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        #updateChartButton:hover {
+            background-color: #0b7dda;
         }
     </style>
 </head>
 <body>
     <div id="controls">
-        <label for="dataType">Choose data type:</label>
-        <select id="dataType" onchange="updateChart()">
-            <option value="states">Population across States</option>
-            <option value="counties">Population across Counties</option>
-            <option value="populationDistribution">Population Distribution</option>
-            <option value="ethnicity">Ethnicity</option>
-            <option value="gender">Gender</option>
-            <option value="income_state">Income distribution State</option>
-            <option value="income_county">Income distribution County</option>
-            <option value="meancommute">Mean Commute Time</option>
-            <option value="scatter">Scatter Plot</option>
-        </select>
+        <button onclick="showChartOptions()">Bar/Histogram</button>
+        <button onclick="showScatterOptions()">Scatter Plot</button>
+
+        <div id="chart-options" style="display: none;">
+            <label for="dataType">Choose data type:</label>
+            <select id="dataType" onchange="onDataTypeChange()">
+                <option value="popStates">Population Across States</option>
+                <option value="popCounty">Population Across Counties</option>
+                <option value="incStates">Income Across States</option>
+                <option value="incCounty">Income Across Counties</option>
+                <option value="ethnicity">Ethnicity</option>
+                <option value="gender">Gender</option>
+                <option value="populationDistribution">Population Distribution</option>
+                <option value="incomeDistribution">Income Distribution</option>
+                <option value="meancommute">Mean Commute Time</option>
+                <option value="production">Production</option>
+                <option value="drive">Drive</option>
+                <option value="carpool">Carpool</option>
+                <option value="transit">Transit</option>
+                <option value="walk">Walk</option>
+                <option value="otherTransp">Other Transport</option>
+                <option value="workAtHome">Work At Home</option>
+                <option value="privateWork">Private Work</option>
+                <option value="publicWork">Public Work</option>
+                <option value="selfEmployed">Self Employed</option>
+                <option value="familyWork">Family Work</option>
+                <option value="unemployment">Unemployment</option>
+            </select>
+
+            <div id="region-selector" style="display: none; margin-top: 10px;">
+                <label for="regionSelect">Select Regions:</label>
+                <div class="checkbox-dropdown">
+                    <div id="regionCheckboxes" style="max-height: 200px; overflow-y: auto;"></div>
+                </div>
+                <button id="updateChartButton" onclick="updateChart()" style="display: none;">Update Chart</button>
+            </div>
+        </div>
 
         <div id="scatter-options" style="display: none;">
-            <label><input type="radio" name="xVariable" value="Income" checked> Income</label>
-            <label><input type="radio" name="xVariable" value="Poverty"> Poverty</label>
-            <label><input type="radio" name="xVariable" value="TotalPop"> Total Population</label>
-            <br>
-            <label><input type="radio" name="yVariable" value="Income"> Income</label>
-            <label><input type="radio" name="yVariable" value="Poverty" checked> Poverty</label>
-            <label><input type="radio" name="yVariable" value="TotalPop"> Total Population</label>
+            <label for="xVariable">X Variable:</label>
+            <select id="xVariable">
+                <option value="Income">Income</option>
+                <option value="TotalPop">Total Population</option>
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+                <option value="Hispanic">Hispanic</option>
+                <option value="White">White</option>
+                <option value="Black">Black</option>
+                <option value="Native">Native</option>
+                <option value="Asian">Asian</option>
+                <option value="Pacific">Pacific</option>
+                <option value="VotingAgeCitizen">Voting Age Citizen</option>
+                <option value="Income">Income</option>
+                <option value="Poverty">Poverty</option>
+                <option value="ChildPoverty">Child Poverty</option>
+                <option value="Professional">Professional</option>
+                <option value="Service">Service</option>
+                <option value="Office">Office</option>
+                <option value="Construction">Construction</option>
+                <option value="Production">Production</option>
+                <option value="Drive">Drive</option>
+                <option value="Carpool">Carpool</option>
+                <option value="Transit">Transit</option>
+                <option value="Walk">Walk</option>
+                <option value="OtherTransp">Other Transport</option>
+                <option value="WorkAtHome">Work At Home</option>
+                <option value="MeanCommute">Mean Commute</option>
+                <option value="Employed">Employed</option>
+                <option value="PrivateWork">Private Work</option>
+                <option value="PublicWork">Public Work</option>
+                <option value="SelfEmployed">Self Employed</option>
+                <option value="FamilyWork">Family Work</option>
+                <option value="Unemployment">Unemployment</option>
+            </select>
+
+            <label for="yVariable">Y Variable:</label>
+            <select id="yVariable">
+                <option value="Poverty">Poverty</option>
+                <option value="TotalPop">Total Population</option>
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+                <option value="Hispanic">Hispanic</option>
+                <option value="White">White</option>
+                <option value="Black">Black</option>
+                <option value="Native">Native</option>
+                <option value="Asian">Asian</option>
+                <option value="Pacific">Pacific</option>
+                <option value="VotingAgeCitizen">Voting Age Citizen</option>
+                <option value="Income">Income</option>
+                <option value="Poverty">Poverty</option>
+                <option value="ChildPoverty">Child Poverty</option>
+                <option value="Professional">Professional</option>
+                <option value="Service">Service</option>
+                <option value="Office">Office</option>
+                <option value="Construction">Construction</option>
+                <option value="Production">Production</option>
+                <option value="Drive">Drive</option>
+                <option value="Carpool">Carpool</option>
+                <option value="Transit">Transit</option>
+                <option value="Walk">Walk</option>
+                <option value="OtherTransp">Other Transport</option>
+                <option value="WorkAtHome">Work At Home</option>
+                <option value="MeanCommute">Mean Commute</option>
+                <option value="Employed">Employed</option>
+                <option value="PrivateWork">Private Work</option>
+                <option value="PublicWork">Public Work</option>
+                <option value="SelfEmployed">Self Employed</option>
+                <option value="FamilyWork">Family Work</option>
+                <option value="Unemployment">Unemployment</option>
+            </select>
+
+            <button onclick="updateScatterPlot()">Update Scatter Plot</button>
         </div>
+
+        <button id="toggleOrientation" onclick="toggleOrientation()" style="display: none;">Toggle Orientation</button>
     </div>
 
     <div class="chart-container">
-        <svg id="chart" width="800" height="500"></svg>
+        <svg id="chart" width="1000" height="600"></svg>
     </div>
 
     <script src="charts.js"></script>
