@@ -41,8 +41,9 @@ function showScatterOptions() {
     document.getElementById("toggleOrientation").style.display = "none";
     
     // Set default values for scatter plot
-    document.getElementById('xVariable').value = 'Income';
-    document.getElementById('yVariable').value = 'Poverty';
+    document.getElementById('variable1').value = 'Income';
+    document.getElementById('variable2').value = 'Poverty';
+    document.getElementById('variable1XAxis').checked = true;
     
     // Draw default scatter plot
     updateScatterPlot();
@@ -214,7 +215,7 @@ function updateChart() {
     } else if (dataType === "ethnicity") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-         d3.json("http://127.0.0.1:5000/data/gender").then(data => {
+         d3.json("http://127.0.0.1:5000/data/ethnicity").then(data => {
             drawBarChart(data, "Ethnicity", "TotalPop", {
                 title: "Population Distribution by Ethnicity",
                 xLabel: "Ethnic Groups",
@@ -344,8 +345,11 @@ function updateChart() {
 // Function to update the scatter plot based on the selected variables
 function updateScatterPlot() {
     d3.csv("data/data.csv").then(data => {
-        const xVariable = document.getElementById('xVariable').value;
-        const yVariable = document.getElementById('yVariable').value;
+        const variable1 = document.getElementById('variable1').value;
+        const variable2 = document.getElementById('variable2').value;
+        const isVariable1XAxis = document.getElementById('variable1XAxis').checked;
+        const xVariable = isVariable1XAxis ? variable1 : variable2;
+        const yVariable = isVariable1XAxis ? variable2 : variable1;
         drawScatterPlot(data, {
             title: `${xVariable} vs ${yVariable} Relationship`,
             xLabel: xVariable,
@@ -361,20 +365,20 @@ function populateScatterOptions(columns) {
     const excludeColumns = ['TractId', 'State', 'County', 'IncomeErr', 'IncomePerCapErr'];
     const filteredColumns = columns.filter(column => !excludeColumns.includes(column));
 
-    const xDropdown = d3.select("#xVariable");
-    const yDropdown = d3.select("#yVariable");
+    const variable1Dropdown = d3.select("#variable1");
+    const variable2Dropdown = d3.select("#variable2");
 
-    xDropdown.selectAll("option").remove();
-    yDropdown.selectAll("option").remove();
+    variable1Dropdown.selectAll("option").remove();
+    variable2Dropdown.selectAll("option").remove();
 
-    xDropdown.selectAll("option")
+    variable1Dropdown.selectAll("option")
         .data(filteredColumns)
         .enter()
         .append("option")
         .attr("value", d => d)
         .text(d => d);
 
-    yDropdown.selectAll("option")
+    variable2Dropdown.selectAll("option")
         .data(filteredColumns)
         .enter()
         .append("option")

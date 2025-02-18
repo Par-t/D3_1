@@ -344,8 +344,11 @@ function drawScatterPlot(data, options = {}) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     // Get selected variables
-    const xVariable = document.getElementById('xVariable').value;
-    const yVariable = document.getElementById('yVariable').value;
+    const variable1 = document.getElementById('variable1').value;
+    const variable2 = document.getElementById('variable2').value;
+    const isVariable1XAxis = document.getElementById('variable1XAxis').checked;
+    const xVariable = isVariable1XAxis ? variable1 : variable2;
+    const yVariable = isVariable1XAxis ? variable2 : variable1;
 
     // Create scales
     const x = d3.scaleLinear()
@@ -404,9 +407,9 @@ function drawScatterPlot(data, options = {}) {
         .append("circle")
         .attr("cx", d => x(+d[xVariable]))
         .attr("cy", d => y(+d[yVariable]))
-        .attr("r", 3)  
+        .attr("r", 3)  // Reduced radius
         .attr("fill", d => color(d.State))
-        .attr("opacity", 0.4)  // Reduced opacity 
+        .attr("opacity", 0.4)  // Reduced opacity
         .on("mouseover", function(event, d) {
             d3.select(this)
                 .attr("opacity", 1)  // Full opacity on hover

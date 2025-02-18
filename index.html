@@ -107,7 +107,7 @@
     </div>
 
     <div id="controls">
-        <button onclick="showChartOptions()">Bar Chart/Histogram Chart</button>
+        <button onclick="showChartOptions()">Bar Chart/Histogram Charts</button>
         <button onclick="showScatterOptions()">Scatter Plot</button>
 
         <div id="chart-options" style="display: none;">
@@ -146,8 +146,8 @@
         </div>
 
         <div id="scatter-options" style="display: none;">
-            <label for="xVariable">X Variable:</label>
-            <select id="xVariable">
+            <label for="variable1">Variable 1:</label>
+            <select id="variable1">
                 <option value="Income">Income</option>
                 <option value="TotalPop">Total Population</option>
                 <option value="Men">Men</option>
@@ -182,8 +182,8 @@
                 <option value="Unemployment">Unemployment</option>
             </select>
 
-            <label for="yVariable">Y Variable:</label>
-            <select id="yVariable">
+            <label for="variable2">Variable 2:</label>
+            <select id="variable2">
                 <option value="Poverty">Poverty</option>
                 <option value="TotalPop">Total Population</option>
                 <option value="Men">Men</option>
@@ -217,6 +217,13 @@
                 <option value="FamilyWork">Family Work</option>
                 <option value="Unemployment">Unemployment</option>
             </select>
+
+            <div>
+                <input type="radio" id="variable1XAxis" name="axisSelection" value="variable1XAxis" checked>
+                <label for="variable1XAxis">Variable 1 on X Axis</label>
+                <input type="radio" id="variable1YAxis" name="axisSelection" value="variable1YAxis">
+                <label for="variable1YAxis">Variable 1 on Y Axis</label>
+            </div>
 
             <button onclick="updateScatterPlot()">Update Scatter Plot</button>
         </div>
