@@ -97,7 +97,6 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
             .style("fill", "black")
             .text(d => d3.format(",")(d[valueKey]));
 
-        // Add x-axis label with larger font
         d3.select("#chart").append("text")
             .attr("x", width / 2 + margin.left)
             .attr("y", height + margin.top + 40)
@@ -106,7 +105,6 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
             .style("font-size", "16px")
             .text("Population");
 
-        // Add y-axis label with larger font
         d3.select("#chart").append("text")
             .attr("transform", "rotate(-90)")
             .attr("y", margin.left / 2 - 40)
@@ -127,7 +125,7 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
             .nice()
             .range([height, 0]);
 
-        // Add horizontal grid lines and labels
+        // horizontal grid lines and labels
         g.selectAll("grid-line")
             .data(y.ticks())
             .enter()
@@ -141,7 +139,7 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
             .style("stroke-opacity", 0.8)
             .style("stroke-dasharray", "5,5");
 
-        // Add value labels for grid lines
+        // value labels for grid lines
         g.selectAll(".grid-label")
             .data(y.ticks())
             .enter()
@@ -155,7 +153,7 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
             .style("font-size", "12px")
             .text(d => d3.format(",")(d));
 
-        // Add x-axis labels (category labels)
+        // x-axis labels
         g.selectAll(".x-label")
             .data(data)
             .enter()
@@ -185,7 +183,7 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
             .on("mouseout", function() {
                 d3.select(this).attr("fill", "steelblue");
             })
-            .style("transition", "fill 0.3s ease")  // Smooth transition for hover
+            .style("transition", "fill 0.3s ease")  // hover
             .append("title")
             .text(d => `${d[labelKey]}\nPopulation: ${d3.format(",")(d[valueKey])}`);
 
@@ -406,7 +404,7 @@ function drawScatterPlot(data, options = {}) {
         .append("circle")
         .attr("cx", d => x(+d[xVariable]))
         .attr("cy", d => y(+d[yVariable]))
-        .attr("r", 3)  // Reduced radiusr
+        .attr("r", 3)  
         .attr("fill", d => color(d.State))
         .attr("opacity", 0.4)  // Reduced opacity 
         .on("mouseover", function(event, d) {
@@ -416,8 +414,8 @@ function drawScatterPlot(data, options = {}) {
         })
         .on("mouseout", function() {
             d3.select(this)
-                .attr("opacity", 0.4)  // Return to original opacity
-                .attr("r", 3);  // Return to original size
+                .attr("opacity", 0.4)  
+                .attr("r", 3);  
         })
         .append("title")
         .text(d => `State: ${d.State}\nCounty: ${d.County}\n${xVariable}: ${d3.format(",")(d[xVariable])}\n${yVariable}: ${d3.format(",")(d[yVariable])}`);

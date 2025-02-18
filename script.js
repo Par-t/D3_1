@@ -3,18 +3,10 @@ let isInitialLoad = true;
 
 // Fetch the columns from data.csv and populate the dropdown menu
 d3.csv("data/data.csv").then(data => {
-    // Get the column names
     const columns = data.columns;
-
-    // Columns to exclude
     const excludeColumns = ['TractId', 'IncomeErr', 'IncomePerCapErr'];
-
-    // Filter out the columns to exclude
     const filteredColumns = columns.filter(column => !excludeColumns.includes(column));
-
-    // Get the dropdown menu element
     const dropdown = d3.select("#columns");
-
     // Populate the dropdown menu with the filtered columns
     dropdown.selectAll("option")
         .data(filteredColumns)
@@ -26,15 +18,7 @@ d3.csv("data/data.csv").then(data => {
     console.error("Error loading the CSV file:", error);
 });
 
-let isHorizontal = false;
-
-// // Add percentage formatting for specific metrics
-// const percentageMetrics = [
-//     'Poverty', 'ChildPoverty', 'Professional', 'Service', 'Office', 
-//     'Construction', 'Production', 'Drive', 'Carpool', 'Transit', 
-//     'Walk', 'OtherTransp', 'WorkAtHome', 'PrivateWork', 
-//     'PublicWork', 'SelfEmployed', 'FamilyWork', 'Unemployment'
-// ];
+let isHorizontal = false; //toggle orientation of bar chart
 
 // Function to show chart options
 function showChartOptions() {
@@ -230,7 +214,7 @@ function updateChart() {
     } else if (dataType === "ethnicity") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        d3.json("http://127.0.0.1:5000/data/ethnicity").then(data => {
+         d3.json("http://127.0.0.1:5000/data/gender").then(data => {
             drawBarChart(data, "Ethnicity", "TotalPop", {
                 title: "Population Distribution by Ethnicity",
                 xLabel: "Ethnic Groups",
@@ -330,7 +314,7 @@ function updateChart() {
         'publicWork', 'selfEmployed', 'familyWork', 'unemployment'
     ];
 
-    // Helper function to capitalize first letter
+    //To capitalize first letter, required for data fetching
     function capitalizeFirst(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -343,7 +327,7 @@ function updateChart() {
             toggleButton.style.display = 'none';
             d3.csv("data/data.csv").then(data => {
                 const formattedMetric = metric.charAt(0).toUpperCase() + 
-                metric.slice(1).replace(/([A-Z])/g, ' $1').trim();
+                metric.slice(1).replace(/([A-Z])/g, ' $1').trim(); // for visualization 
                 drawHistogram(data, capitalizeFirst(metric), 1, {
                     title: `${formattedMetric} Distribution`,
                     xLabel: `${formattedMetric} (%)`,
@@ -372,6 +356,7 @@ function updateScatterPlot() {
     });
 }
 
+// Scatter plot dropdown menu
 function populateScatterOptions(columns) {
     const excludeColumns = ['TractId', 'State', 'County', 'IncomeErr', 'IncomePerCapErr'];
     const filteredColumns = columns.filter(column => !excludeColumns.includes(column));
@@ -401,7 +386,7 @@ function populateScatterOptions(columns) {
 function toggleOrientation() {
     isHorizontal = !isHorizontal;
     const dataType = d3.select("#dataType").property("value");
-    updateChart(); // This will redraw the chart with the new orientation
+    updateChart(); 
 }
 
 function populateRegionCheckboxes(data, type) {
@@ -411,7 +396,6 @@ function populateRegionCheckboxes(data, type) {
     
     let regions = [...new Set(data.map(d => d[type]))].sort();
     
-    // On initial load, don't select any regions
     if (isInitialLoad) {
         selectedRegions.clear();
         isInitialLoad = false;
@@ -446,7 +430,7 @@ function populateRegionCheckboxes(data, type) {
     updateButton.style.display = (type === 'State' || type === 'County') ? 'block' : 'none';
 }
 
-// Add a function to handle data type changes
+// Resetting state when choosing a new variable in dropdown menu
 function onDataTypeChange() {
     isInitialLoad = true;
     selectedRegions.clear();

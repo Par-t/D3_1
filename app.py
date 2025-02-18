@@ -1,8 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS  # Add this import
+from flask import Flask, send_from_directory, jsonify , request
+from flask_cors import CORS  
 import os
 import pandas as pd
-import atexit  # Add this import at the top with other imports
+import atexit  
 
 app = Flask(__name__)
 CORS(app)
@@ -69,7 +69,6 @@ def update_grouped_data():
 
 # Function to clean up grouped data files on exit
 def cleanup_files():
-    """Delete grouped CSV files on program exit"""
     try:
         if os.path.exists(STATE_CSV):
             os.remove(STATE_CSV)
@@ -81,21 +80,6 @@ def cleanup_files():
 
 # Register the cleanup function to run on exit
 atexit.register(cleanup_files)
-
-# Ensure grouped data is available on startup
-update_grouped_data()
-
-# Route to get county-level data
-@app.route("/data/county", methods=["GET"])
-def get_county_data():
-    grouped_county = pd.read_csv(COUNTY_CSV)
-    return jsonify(grouped_county.to_dict(orient="records"))
-
-# Route to get state-level data
-@app.route("/data/state", methods=["GET"])
-def get_state_data():
-    grouped_state = pd.read_csv(STATE_CSV)
-    return jsonify(grouped_state.to_dict(orient="records"))
 
 # Route to get ethnicity data
 @app.route("/data/ethnicity", methods=["GET"])
