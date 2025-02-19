@@ -234,48 +234,127 @@ function drawBarChart(data, labelKey, valueKey, options = {}) {
 
 function drawHistogram(data, valueKey, binSize, options = {}) {
     const svg = d3.select("#chart");
-    svg.selectAll("*").remove();  // Clear previous chart
+    svg.selectAll("*").remove();
 
-    const margin = { top: 40, right: 30, bottom: 60, left: 60 };
+    const margin = { top: 50, right: 50, bottom: 70, left: 70 };
     const width = +svg.attr("width") - margin.left - margin.right;
     const height = +svg.attr("height") - margin.top - margin.bottom;
 
     const g = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Create scales
+    // Create histogram generator
     const x = d3.scaleLinear()
         .domain([0, d3.max(data, d => +d[valueKey])])
         .nice()
-        .range([0, width]);
-
-    console.log("X Scale Domain:", x.domain());
+        .range(isHorizontal ? [0, height] : [0, width]);
 
     const histogram = d3.histogram()
-        .value(d => d[valueKey])
+        .value(d => +d[valueKey])
         .domain(x.domain())
-        .thresholds(x.ticks(Math.ceil((x.domain()[1] - x.domain()[0]) / binSize)));  // Set bin size
+        .thresholds(x.ticks(Math.ceil((x.domain()[1] - x.domain()[0]) / binSize)));
 
     const bins = histogram(data);
-
-    console.log("Histogram Bins:", bins);
 
     const y = d3.scaleLinear()
         .domain([0, d3.max(bins, d => d.length)])
         .nice()
-        .range([height, 0]);
+        .range(isHorizontal ? [width, 0] : [height, 0]);
 
-    console.log("Y Scale Domain:", y.domain());
+        if (isHorizontal) {
+        const x = d3.scaleLinear()
+            .domain([0, d3.max(bins, d => d.length)]) 
+            .range([0, width]);                    
 
-    // Create axes
-    g.append("g")
+        const y = d3.scaleLinear()
+            .domain([0, 100]) 
+            .range([height, 0]); 
+
+        g.append("g")
         .attr("transform", `translate(0,${height})`)
         .call(d3.axisBottom(x));
 
-    g.append("g")
-        .call(d3.axisLeft(y)
-            .ticks(10)
-            .tickFormat(d3.format(".2s")));
+        g.append("g")
+        .call(d3.axisLeft(y));
+
+        g.selectAll(".bar")
+        .data(bins)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", 0)
+        .attr("y", d => y(d.x1)) 
+        .attr("width", d => x(d.length)) 
+        .attr("height", d => y(d.x0) - y(d.x1)) 
+        .attr("fill", "steelblue")
+        .on("mouseover", function() {
+            d3.select(this).attr("fill", "orange");
+        })
+        .on("mouseout", function() {
+            d3.select(this).attr("fill", "steelblue");
+        });
+
+        svg.append("text")
+        .attr("class", "x-label")
+        .attr("text-anchor", "middle")
+        .attr("x", width / 2 + margin.left)
+        .attr("y", height + margin.top + 40)
+        .text("Frequency");
+
+        svg.append("text")
+        .attr("class", "y-label")
+        .attr("text-anchor", "middle")
+        .attr("transform", `translate(${margin.left / 3 -10 },${height / 2 + margin.top}) rotate(-90)`)
+        .text(options.xLabel || valueKey);
+
+        g.append("g")
+            .call(d3.axisLeft(y).tickFormat(d => d3.format(",")(d)));  // Add comma formatting
+
+        }else {
+        // Original vertical histogram code
+        g.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+        g.append("g")
+            .call(d3.axisLeft(y));
+
+        const bars = g.selectAll(".bar")
+            .data(bins)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", d => x(d.x0) + 1)
+            .attr("y", d => y(d.length))
+            .attr("width", d => x(d.x1) - x(d.x0) - 1)
+            .attr("height", d => height - y(d.length))
+            .attr("fill", "steelblue")
+            .on("mouseover", function() {
+                d3.select(this).attr("fill", "orange");
+            })
+            .on("mouseout", function() {
+                d3.select(this).attr("fill", "steelblue");
+            });
+
+        // Add labels
+        svg.append("text")
+            .attr("class", "x-label")
+            .attr("text-anchor", "middle")
+            .attr("x", width / 2 + margin.left)
+            .attr("y", height + margin.top + 40)
+            .text(options.xLabel || valueKey);
+
+        svg.append("text")
+            .attr("class", "y-label")
+            .attr("text-anchor", "middle")
+            .attr("transform", `translate(${margin.left / 3 -10 },${height / 2 + margin.top}) rotate(-90)`)
+            .text("Frequency");
+
+        // Add explicit variable name labels for y-axis
+        g.append("g")
+            .call(d3.axisLeft(y).tickFormat(d => d3.format(",")(d)));  // Add comma formatting
+
+    }
 
     // Add title
     svg.append("text")
@@ -283,53 +362,7 @@ function drawHistogram(data, valueKey, binSize, options = {}) {
         .attr("x", width / 2 + margin.left)
         .attr("y", margin.top / 2)
         .attr("text-anchor", "middle")
-        .style("font-size", "18px")
         .text(options.title || `${valueKey} Distribution`);
-
-    // Add y-axis label
-    svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", margin.left / 2 - 10)
-        .attr("x", -(height / 2) - margin.top)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .text(options.yLabel || "Frequency");
-
-    // Create and style the bars
-    const bars = g.selectAll(".bar")
-        .data(bins)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("x", d => x(d.x0) + 1)
-        .attr("y", d => y(d.length))
-        .attr("width", d => x(d.x1) - x(d.x0) - 1)
-        .attr("height", d => height - y(d.length))
-        .attr("fill", "steelblue")
-        .on("mouseover", function() {
-            d3.select(this).attr("fill", "orange");
-        })
-        .on("mouseout", function() {
-            d3.select(this).attr("fill", "steelblue");
-        })
-        .style("transition", "fill 0.3s ease")  // Smooth transition for hover
-        .append("title")
-        .text(d => {
-            const range = options.valueFormat ? 
-                `${options.valueFormat(d.x0)} - ${options.valueFormat(d.x1)}` :
-                `${d3.format(",")(d.x0)} - ${d3.format(",")(d.x1)}`;
-            return `${range}\nCount: ${d3.format(",")(d.length)}`;
-        });
-
-    console.log("Bars:", bars);
-
-    // Update axis labels with units
-    g.append("text")
-        .attr("class", "x-label")
-        .attr("text-anchor", "middle")
-        .attr("x", width / 2)
-        .attr("y", height + margin.bottom - 10)
-        .text(options.xLabel || valueKey);
 }
 
 function drawScatterPlot(data, options = {}) {
@@ -422,5 +455,9 @@ function drawScatterPlot(data, options = {}) {
         })
         .append("title")
         .text(d => `State: ${d.State}\nCounty: ${d.County}\n${xVariable}: ${d3.format(",")(d[xVariable])}\n${yVariable}: ${d3.format(",")(d[yVariable])}`);
+
+    // Add color note below the scatter plot
+    d3.select("#color-note")
+        .html("Note: Regions(points on the plot) from the same state are shown in the same color. Hover over a point to see the details.");
 }
 

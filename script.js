@@ -20,17 +20,22 @@ d3.csv("data/data.csv").then(data => {
 
 let isHorizontal = false; //toggle orientation of bar chart
 
+const CONFIG = {
+    chartTypes: {
+        toggleable: ["popStates", "popCounty", "incStates", "incCounty", "ethnicity", "gender",
+                    "populationDistribution", "incomeDistribution", "meancommute", "production",
+                    // Add other histogram types
+                    'drive', 'carpool', 'transit', 'walk', 'otherTransp', 'workAtHome',
+                    'privateWork', 'publicWork', 'selfEmployed', 'familyWork', 'unemployment']
+    }
+};
+
 // Function to show chart options
 function showChartOptions() {
     document.getElementById("chart-options").style.display = "block";
     document.getElementById("scatter-options").style.display = "none";
-    
-    // Show/hide toggle button based on selected chart type
-    const dataType = d3.select("#dataType").property("value");
-    const barChartTypes = ["states", "counties", "ethnicity", "gender"];
-    document.getElementById("toggleOrientation").style.display = 
-        barChartTypes.includes(dataType) ? "block" : "none";
-    
+    // Hide color note for bar charts and histograms
+    document.getElementById("color-note").style.display = "none";
     updateChart();
 }
 
@@ -38,14 +43,8 @@ function showChartOptions() {
 function showScatterOptions() {
     document.getElementById("chart-options").style.display = "none";
     document.getElementById("scatter-options").style.display = "block";
-    document.getElementById("toggleOrientation").style.display = "none";
-    
-    // Set default values for scatter plot
-    document.getElementById('variable1').value = 'Income';
-    document.getElementById('variable2').value = 'Poverty';
-    document.getElementById('variable1XAxis').checked = true;
-    
-    // Draw default scatter plot
+    // Show color note for scatter plots
+    document.getElementById("color-note").style.display = "block";
     updateScatterPlot();
 }
 
@@ -56,9 +55,8 @@ function updateChart() {
     const updateButton = document.getElementById('updateChartButton');
     const toggleButton = document.getElementById('toggleOrientation');
 
-    // Show toggle button for bar chart types
-    const barChartTypes = ["popStates", "popCounty", "incStates", "incCounty", "ethnicity", "gender"];
-    toggleButton.style.display = barChartTypes.includes(dataType) ? "block" : "none";
+    // Show toggle button for all chart types except scatter plots
+    toggleButton.style.display = "block";
 
     if (dataType === "popStates") {
         d3.csv("data/grouped_state.csv").then(data => {
@@ -188,7 +186,6 @@ function updateChart() {
     }else if (dataType === "populationDistribution") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/data.csv").then(data => {
             drawHistogram(data, "TotalPop", 500, {
                 title: "Population Distribution",
@@ -201,7 +198,6 @@ function updateChart() {
     }  else if (dataType === "incomeDistribution") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/data.csv").then(data => {
             drawHistogram(data, "Income", 5000, {
                 title: "Income Distribution",
@@ -239,7 +235,6 @@ function updateChart() {
     } else if (dataType === "income_state") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/grouped_state.csv").then(data => {
             drawHistogram(data, "Income", 10000000, {
                 title: "Income Distribution by State",
@@ -252,7 +247,6 @@ function updateChart() {
     } else if (dataType === "income_county") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/grouped_county.csv").then(data => {
             drawHistogram(data, "Income", 1000000, {
                 title: "Income Distribution by County",
@@ -265,7 +259,6 @@ function updateChart() {
     } else if (dataType === "meancommute") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/data.csv").then(data => {
             drawHistogram(data, "MeanCommute", 5, {
                 title: "Mean Commute Time Distribution",
@@ -279,7 +272,6 @@ function updateChart() {
     } else if (dataType === "production") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/data.csv").then(data => {
             drawHistogram(data, "Production", 1, {  // Reduced bin size for percentages
                 title: "Production Occupation Distribution",
@@ -293,7 +285,6 @@ function updateChart() {
     } else if (dataType === "scatter") {
         regionSelector.style.display = 'none';
         updateButton.style.display = 'none';
-        toggleButton.style.display = 'none';
         d3.csv("data/grouped_county.csv").then(data => {
             document.getElementById("scatter-options").style.display = "block";
             drawScatterPlot(data);
@@ -325,7 +316,6 @@ function updateChart() {
         if (dataType === metric) {
             regionSelector.style.display = 'none';
             updateButton.style.display = 'none';
-            toggleButton.style.display = 'none';
             d3.csv("data/data.csv").then(data => {
                 const formattedMetric = metric.charAt(0).toUpperCase() + 
                 metric.slice(1).replace(/([A-Z])/g, ' $1').trim(); // for visualization 

@@ -98,6 +98,16 @@
         .bar {
             fill: #04b7b7; 
         }
+        .color-note {
+                margin-top: 10px;
+                padding: 10px;
+                background-color: #f8f8f8;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+                color: #333;
+                text-align: center;
+            }
     </style>
 </head>
 <body>
@@ -232,7 +242,10 @@
     </div>
 
     <div class="chart-container">
-        <svg id="chart" width="1000" height="600"></svg>
+        <div id="scatter-plot-container">
+            <div id="color-note" class="color-note"></div>
+            <svg id="chart" width="1000" height="600"></svg>
+        </div>
     </div>
 
     <script src="charts.js"></script>
